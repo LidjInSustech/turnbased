@@ -3,7 +3,7 @@ import controller
 
 def main():
     pg.init()
-    screen = pg.display.set_mode((1024, 768))
+    pg.display.set_mode((1024, 512))
     controller.ctrler().start()
 
 if __name__ == '__main__':
