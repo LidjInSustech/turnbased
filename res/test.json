@@ -1,0 +1,30 @@
+{
+    "name":"test",
+    "maxhp":100.0,
+    "maxmp":100.0,
+    "maxap":5.0,
+    "mpregen": 10.0,
+    "speed": 1.0,
+    "atk":30.0,
+    "risist":{
+        "blunt":0,
+        "pierce":0,
+        "shock":0,
+        "heat":0,
+        "cold":0,
+        "electric":0,
+        "biochemical":0
+    },
+    "skills":[
+        {
+            "name":"test",
+            "type":"attack",
+            "target":"single",
+            "damage":1.0,
+            "cost":{
+                "ap":2,
+                "mp":0
+            }
+        }
+    ]
+}
