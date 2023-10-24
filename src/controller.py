@@ -23,16 +23,28 @@ class controller:
         while len(self.prepared_fighter) < 1:
             self.tick()
         self.prepared_fighter.sort(key=lambda x: x.ap, reverse=True)
+        for i in self.prepared_fighter:
+            i.prepared = True
+        self.prepared_fighter[0].actioning = True
+        self.all_fighters.update()
 
     # actions
 
     def skip(self):
         while self.prepared_fighter[0].ap >= 5:
             self.prepared_fighter[0].ap -= 1
-            self.prepared_fighter.pop(0)
-            return True
+        self.prepared_fighter[0].prepared = False
+        self.prepared_fighter[0].actioning = False
+        self.prepared_fighter[0].update()
+        self.prepared_fighter.pop(0)
+        if len(self.prepared_fighter) > 0:
+            self.prepared_fighter[0].actioning = True
+            self.prepared_fighter[0].update()
+        return True
         
-    def move(self, destination):
+    def move(self, faction, destination):
+        if faction != self.prepared_fighter[0].faction:
+            return False
         if self.prepared_fighter[0].ap >= 2:
             self.prepared_fighter[0].ap -= 2
             self.fields[self.prepared_fighter[0].faction][self.prepared_fighter[0].field].remove(self.prepared_fighter[0])
@@ -41,6 +53,6 @@ class controller:
             return True
         return False
         
-    def cast(self, spell, target_field, target_fighter):
+    def cast(self, spell, target_faction, target_field, target_fighter):
         return True
             
