@@ -17,14 +17,25 @@
     },
     "skills":[
         {
-            "name":"test",
-            "type":"attack",
-            "target":"single",
-            "damage":1.0,
+            "name":"test skill",
+            "requirements":{
+                "faction":"enemy",
+                "field":true,
+                "fighter":true,
+                "longrange":false,
+                "penetrative":false
+            },
             "cost":{
                 "ap":2,
                 "mp":0
-            }
+            },
+            "actions":[
+                {
+                    "type":"damage",
+                    "target":"target_fighter",
+                    "value":{"blunt":10.0}
+                }
+            ]
         }
     ]
 }
