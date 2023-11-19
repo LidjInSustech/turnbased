@@ -13,6 +13,15 @@ class controller:
         self.fields[faction][field].append(fighter)
         self.all_fighters.add(fighter)
 
+    def remove_fighter(self, fighter):
+        self.fields[fighter.faction][fighter.field].remove(fighter)
+        self.all_fighters.remove(fighter)
+
+    def not_end(self):
+        len1 =  len(self.fields[0][0])+len(self.fields[0][1])+len(self.fields[0][2])
+        len2 =  len(self.fields[1][0])+len(self.fields[1][1])+len(self.fields[1][2])
+        return len1 > 0 and len2 > 0
+
     def tick(self):
         self.time += 1
         for i in self.all_fighters:
@@ -54,5 +63,40 @@ class controller:
         return False
         
     def cast(self, spell, target_faction, target_field, target_fighter):
-        return True
+        action_fighter = self.prepared_fighter[0]
+        skills = action_fighter.c['skills']
+        for i in skills:
+            if i['name'] == spell:
+                # check if the spell is valid
+                if self.prepared_fighter[0].ap < i['cost']['ap']:
+                    return False
+                if self.prepared_fighter[0].mp < i['cost']['mp']:
+                    return False
+                
+                requirements = i['requirements']
+                if requirements['faction'] != 'any':
+                    val = {'ally': 0, 'enemy': 1}
+                    if (target_faction + action_fighter.faction) % 2 != val[requirements['faction']]:
+                        return False
+                    
+                if target_field is None and requirements['field'] is not False:
+                    return False
+                if target_fighter is None and requirements['fighter'] is not False:
+                    return False
+                # scuessful cast
+                self.prepared_fighter[0].ap -= i['cost']['ap']
+                self.prepared_fighter[0].mp -= i['cost']['mp']
+                # action
+                for action in i['actions']:
+                    match action['type']:
+                        case 'damage':
+                            value = action['value']
+                            if action['target'] == 'target_fighter':
+                                for k, v in value.items():
+                                    target_fighter.damage(k, v)
+                            if target_fighter.hp <= 0:
+                                self.remove_fighter(target_fighter)
+                        case _:
+                            return False
+                return True
             

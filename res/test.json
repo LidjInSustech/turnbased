@@ -6,7 +6,7 @@
     "mpregen": 10.0,
     "speed": 1.0,
     "atk":30.0,
-    "risist":{
+    "resist":{
         "blunt":0,
         "pierce":0,
         "shock":0,
@@ -33,9 +33,10 @@
                 {
                     "type":"damage",
                     "target":"target_fighter",
-                    "value":{"blunt":10.0}
+                    "value":{"blunt":40.0}
                 }
-            ]
+            ],
+            "description":"test skill description"
         }
     ]
 }
