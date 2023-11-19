@@ -174,9 +174,9 @@ class page:
                 else:
                     faction = 1
                 field = abs(i.message) - 1
-        for fighter in self.controller.all_fighters:
-            if i.rect.collidepoint(pos):
-                fighter = i
+        for f in self.controller.all_fighters:
+            if f.rect.collidepoint(pos):
+                fighter = f
         return faction, field, fighter
 
     def load_controller(self, controller):
@@ -184,12 +184,15 @@ class page:
 
     def load_skills(self):
         skills = self.controller.prepared_fighter[0].c['skills']
-        for i in range(len(skills)):
-            self.skills_buttons[i].message = skills[i]['name']
-            self.skills_buttons[i].load_description(skills[i]['description'])
+        for i, skill in enumerate(skills):
+            self.skills_buttons[i].message = skill['name']
+            self.skills_buttons[i].load_description(skill['description'])
+            self.skills_buttons[i].icon_rect = pg.Rect(self.rect.h*0.01, self.rect.h*0.01, self.rect.h*0.09, self.rect.h*0.09)
+            self.skills_buttons[i].icon = tools.get_image(skill['name'], (self.rect.h*0.09, self.rect.h*0.09))
         for i in range(len(skills), 4):
             self.skills_buttons[i].message = ''
             self.skills_buttons[i].load_description(None)
+            self.skills_buttons[i].icon = None
 
     def start(self):
         self.available = True
@@ -230,6 +233,9 @@ class button(pg.sprite.Sprite):
         self.actived = False
         self.pressed = False
 
+        self.icon_rect = None
+        self.icon = None
+
     def update(self):
         if self.pressed:
             self.image = self.origin_image.copy()
@@ -240,10 +246,17 @@ class button(pg.sprite.Sprite):
         else:
             self.image = self.origin_image.copy()
             pg.draw.rect(self.image, (128,128,128), self.image.get_rect(), 3)
+
+        # render icon
+        if self.icon:
+            self.image.blit(self.icon, self.icon_rect)
+            
         # render message
         if self.font:
             text, text_rect = self.font.render(str(self.message),  fgcolor=(255,255,255))
             text_rect.center = self.ori_rect.center
+            if self.icon_rect:
+                text_rect.move_ip(self.icon_rect.w/2, 0)
             self.image.blit(text, text_rect)
 
     def load_description(self, description):
