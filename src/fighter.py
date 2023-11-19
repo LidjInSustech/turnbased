@@ -49,3 +49,19 @@ class fighter(pg.sprite.Sprite):
         else:
             pg.draw.rect(image, (128,128,128), self.ori_rect, 3)
         self.image = image
+
+    def info(self):
+        return [self.i['name'], 
+                f"{self.hp}/{self.c['maxhp']}",
+                f"{self.mp}/{self.c['maxmp']}",
+                f"{self.ap}/{self.c['maxap']}"]
+
+    def rect_explain(self, rect, font):
+        title = ['name', 'hp', 'mp', 'ap']
+        surface = pg.Surface(rect.size)
+        surface.fill((255,255,255))
+        surface.set_alpha(128)
+        for i in range(len(title)):
+            text, text_rect = font.render(f"{title[i]}: {self.info()[i]}", (0,0,0))
+            surface.blit(text, (0, i*font.size))
+        return surface
