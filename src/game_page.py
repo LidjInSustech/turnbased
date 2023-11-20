@@ -71,9 +71,11 @@ class page:
         if self.explain:
             surface.blit(self.explain[0], self.explain[1])
         self.mid_font.render_to(surface, (0,0), ' time: '+str(self.controller.time), (255,255,255))
+        self.last_surface = surface
         pg.display.get_surface().blit(surface, (0,0))
 
     def draw_fighters(self, surface):
+        self.controller.all_fighters.update()
         rect = self.rect
         for i, field in enumerate(self.controller.fields[0]):
             num = len(field)
@@ -194,6 +196,65 @@ class page:
             self.skills_buttons[i].load_description(None)
             self.skills_buttons[i].icon = None
 
+    def animation(self, clock):
+        while len(self.controller.events) > 0:
+            event = self.controller.events.pop(0)
+            match event['type']:
+                case 'move':
+                    self.move_animation(event, clock)
+                case 'cast':
+                    self.cast_animation(event, clock)
+
+    def move_animation(self, event, clock):
+        rect = self.rect
+        if event['faction'] == 0:
+            from_pos = (rect.w*(0.31-0.14*event['from'][0]) , 
+                        rect.h*0.1 + (self.rect.h*0.52*(0.5+event['from'][1]))/(len(self.controller.fields[0][event['from'][0]])+1) - rect.h*0.05)
+            to_pos = (rect.w*(0.31-0.14*event['to']) ,
+                        rect.h*0.1 + (self.rect.h*0.52*(len(self.controller.fields[0][event['to']])-0.5))/len(self.controller.fields[0][event['to']]) - rect.h*0.05)
+        else:
+            from_pos = (rect.w*(0.57+0.14*event['from'][0]) ,
+                        rect.h*0.1 + (self.rect.h*0.52*(0.5+event['from'][1]))/(len(self.controller.fields[1][event['from'][0]])+1) - rect.h*0.05)
+            to_pos = (rect.w*(0.57+0.14*event['to']) ,
+                        rect.h*0.1 + (self.rect.h*0.52*(len(self.controller.fields[1][event['to']])-0.5))/len(self.controller.fields[1][event['to']]) - rect.h*0.05)
+
+        frames = 15
+        for i in range(frames):
+            surface = self.last_surface.copy()
+            fighter = event['fighter']
+            frect = fighter.rect.copy()
+            frect.topleft = (from_pos[0] + (to_pos[0]-from_pos[0])*i/frames, from_pos[1] + (to_pos[1]-from_pos[1])*i/frames)
+            surface.blit(fighter.image, frect)
+            pg.display.get_surface().blit(surface, (0,0))
+            pg.display.update()
+            clock.tick(60)
+
+    def cast_animation(self, event, clock):
+        rect = self.rect
+        from_pos = self.get_pos(*event['from'])
+        to_pos = self.get_pos(*event['to'])
+        bullet = tools.get_image_alpha('bullet', (int(rect.w*0.03), int(rect.w*0.03)))
+        brect = bullet.get_rect()
+
+        frames = 15
+        for i in range(frames):
+            surface = self.last_surface.copy()
+            brect.center = (from_pos[0] + (to_pos[0]-from_pos[0])*i/frames, from_pos[1] + (to_pos[1]-from_pos[1])*i/frames)
+            surface.blit(bullet, brect)
+            pg.display.get_surface().blit(surface, (0,0))
+            pg.display.update()
+            clock.tick(60)
+
+    def get_pos(self, faction, field, index, length):
+        rect = self.rect
+        if faction == 0:
+            pos = (rect.w*(0.36-0.14*field) ,
+                   rect.h*0.1 + (self.rect.h*0.52*(0.5+index))/(length) - rect.h*0.05 + rect.w*0.05)
+        else:
+            pos = (rect.w*(0.62+0.14*field) ,
+                   rect.h*0.1 + (self.rect.h*0.52*(0.5+index))/(length) - rect.h*0.05 + rect.w*0.05)
+        return pos
+
     def start(self):
         self.available = True
         self.create_field_rects()
@@ -214,6 +275,7 @@ class page:
             self.draw()
             pg.display.update()
             clock.tick(60)
+            self.animation(clock)
     
 class button(pg.sprite.Sprite):
     def __init__(self, rect, message = '', font = None):
