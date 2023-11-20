@@ -1,11 +1,11 @@
 {
-    "name":"test",
-    "maxhp":100.0,
-    "maxmp":100.0,
+    "name":"杂兵",
+    "maxhp":80.0,
+    "maxmp":80.0,
     "maxap":5.0,
     "mpregen": 10.0,
     "speed": 1.0,
-    "atk":30.0,
+    "atk":80.0,
     "resist":{
         "blunt":0,
         "pierce":0,
@@ -17,7 +17,7 @@
     },
     "skills":[
         {
-            "name":"test skill",
+            "name":"打击",
             "requirements":{
                 "faction":"enemy",
                 "field":true,
@@ -33,11 +33,13 @@
                 {
                     "type":"damage",
                     "target":"target_fighter",
-                    "value":{"blunt":40.0}
+                    "value":{"blunt":40.0},
+                    "bullet_img":"bullet",
+                    "demage_img":"demage"
                 }
             ],
             "icon": "attack",
-            "description":"test skill description"
+            "description":"普通攻击"
         }
     ]
 }

@@ -1,4 +1,5 @@
 import pygame as pg
+import auto
 
 class controller:
     def __init__(self):
@@ -6,6 +7,8 @@ class controller:
         self.all_fighters = pg.sprite.Group()
         self.time = 0
         self.prepared_fighter = []
+        self.events = []
+        self.autonomous = [None, auto.auto(self)]
 
     def add_fighter(self, fighter, faction, field):
         fighter.faction = faction
@@ -18,6 +21,9 @@ class controller:
         self.all_fighters.remove(fighter)
 
     def not_end(self):
+        for i in self.all_fighters:
+            if i.hp <= 0:
+                self.remove_fighter(i)
         len1 =  len(self.fields[0][0])+len(self.fields[0][1])+len(self.fields[0][2])
         len2 =  len(self.fields[1][0])+len(self.fields[1][1])+len(self.fields[1][2])
         return len1 > 0 and len2 > 0
@@ -29,13 +35,18 @@ class controller:
                 self.prepared_fighter.append(i)
             
     def start(self):
-        while len(self.prepared_fighter) < 1:
-            self.tick()
-        self.prepared_fighter.sort(key=lambda x: x.ap, reverse=True)
+        while len(self.prepared_fighter) < 1 or (self.autonomous[self.prepared_fighter[0].faction] is not None):
+            while len(self.prepared_fighter) < 1:
+                self.tick()
+            self.prepared_fighter.sort(key=lambda x: x.ap, reverse=True)
+            while len(self.prepared_fighter) > 0 and (self.autonomous[self.prepared_fighter[0].faction] is not None):
+                self.autonomous[self.prepared_fighter[0].faction].next()
+        
+        #self.prepared_fighter.sort(key=lambda x: x.ap, reverse=True)
         for i in self.prepared_fighter:
             i.prepared = True
         self.prepared_fighter[0].actioning = True
-        self.all_fighters.update()
+        #self.all_fighters.update()
 
     # actions
 
@@ -54,7 +65,15 @@ class controller:
     def move(self, faction, destination):
         if faction != self.prepared_fighter[0].faction:
             return False
+        if destination == self.prepared_fighter[0].field:
+            return False
         if self.prepared_fighter[0].ap >= 2:
+            # add animation
+            self.events.append({'type': 'move', 'fighter': self.prepared_fighter[0], 'faction': faction, 
+                                'from': (self.prepared_fighter[0].field, self.fields[self.prepared_fighter[0].faction][self.prepared_fighter[0].field].index(self.prepared_fighter[0])), 
+                                'to': destination})
+            # end animation
+            
             self.prepared_fighter[0].ap -= 2
             self.fields[self.prepared_fighter[0].faction][self.prepared_fighter[0].field].remove(self.prepared_fighter[0])
             self.prepared_fighter[0].field = destination
@@ -91,11 +110,18 @@ class controller:
                     match action['type']:
                         case 'damage':
                             value = action['value']
+                            atk = action_fighter.c['atk']/100.
                             if action['target'] == 'target_fighter':
                                 for k, v in value.items():
-                                    target_fighter.damage(k, v)
-                            if target_fighter.hp <= 0:
-                                self.remove_fighter(target_fighter)
+                                    target_fighter.damage(k, v * atk)
+                            #if target_fighter.hp <= 0:
+                            #    self.remove_fighter(target_fighter)
+
+                            #print(action_fighter.c['name'], 'use skill', i['name'], 'to', target_fighter.c['name'], 'damage', value, 'atk', atk)
+                            self.events.append({'type': 'cast', 
+                                    'from': (action_fighter.faction, action_fighter.field, self.fields[action_fighter.faction][action_fighter.field].index(action_fighter), len(self.fields[action_fighter.faction][action_fighter.field])),
+                                    'to': (target_faction, target_field, self.fields[target_faction][target_field].index(target_fighter), len(self.fields[target_faction][target_field])),
+                                    'bullet_img': action['bullet_img'], 'demage_img': action['demage_img'], 'value': value})
                         case _:
                             return False
                 return True

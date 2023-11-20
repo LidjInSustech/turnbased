@@ -1,6 +1,7 @@
 import pygame as pg
 import tools
 import math
+import datetime
 
 class fighter(pg.sprite.Sprite):
     def __init__(self, properties):
@@ -46,7 +47,8 @@ class fighter(pg.sprite.Sprite):
     def update(self):
         image = self.origin_image.copy()
         if self.actioning:
-            pg.draw.rect(image, (255,255,0), self.ori_rect, 3)
+            color = datetime.datetime.now().microsecond / 2000 % 255
+            pg.draw.rect(image, (color,0,255-color), self.ori_rect, 3)
         elif self.prepared:
             pg.draw.rect(image, (0,255,0), self.ori_rect, 3)
         elif self.actived:

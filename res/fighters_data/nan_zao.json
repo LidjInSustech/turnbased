@@ -1,0 +1,69 @@
+{
+    "name":"南藻",
+    "maxhp":200.0,
+    "maxmp":100.0,
+    "maxap":5.0,
+    "mpregen": 10.0,
+    "speed": 1.0,
+    "atk":100.0,
+    "resist":{
+        "blunt":10,
+        "pierce":10,
+        "shock":0,
+        "heat":0,
+        "cold":0,
+        "electric":0,
+        "biochemical":0
+    },
+    "skills":[
+        {
+            "name":"快速斩击",
+            "requirements":{
+                "faction":"enemy",
+                "field":true,
+                "fighter":true,
+                "longrange":false,
+                "penetrative":false
+            },
+            "cost":{
+                "ap":2,
+                "mp":0
+            },
+            "actions":[
+                {
+                    "type":"damage",
+                    "target":"target_fighter",
+                    "value":{"blunt":10.0, "pierce":50.0},
+                    "bullet_img":"bullet",
+                    "demage_img":"demage"
+                }
+            ],
+            "icon": "attack",
+            "description":"快速地进行斩击"
+        },
+        {
+            "name":"合金护盾",
+            "requirements":{
+                "faction":"ally",
+                "field":false,
+                "fighter":false,
+                "longrange":false,
+                "penetrative":false
+            },
+            "cost":{
+                "ap":3,
+                "mp":0
+            },
+            "actions":[
+                {
+                    "type":"buff",
+                    "target":"self",
+                    "value":{"blunt":40.0, "pierce":40.0},
+                    "time": 3
+                }
+            ],
+            "icon": "defense",
+            "description":"增加防御力"
+        }
+    ]
+}
