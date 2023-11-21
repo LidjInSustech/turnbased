@@ -124,5 +124,9 @@ class controller:
                                     'bullet_img': action['bullet_img'], 'demage_img': action['demage_img'], 'value': value})
                         case _:
                             return False
+                self.events.append({'type': 'cast', 
+                                    'from': (action_fighter.faction, action_fighter.field, self.fields[action_fighter.faction][action_fighter.field].index(action_fighter), len(self.fields[action_fighter.faction][action_fighter.field])),
+                                    'to': (target_faction, target_field, self.fields[target_faction][target_field].index(target_fighter), len(self.fields[target_faction][target_field])),
+                                    'skill': i})
                 return True
             
