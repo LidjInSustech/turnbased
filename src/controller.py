@@ -94,6 +94,8 @@ class controller:
                 
                 requirements = i['requirements']
                 if requirements['faction'] != 'any':
+                    if target_faction is None:
+                        return False
                     val = {'ally': 0, 'enemy': 1}
                     if (target_faction + action_fighter.faction) % 2 != val[requirements['faction']]:
                         return False
@@ -122,11 +124,19 @@ class controller:
                                     'from': (action_fighter.faction, action_fighter.field, self.fields[action_fighter.faction][action_fighter.field].index(action_fighter), len(self.fields[action_fighter.faction][action_fighter.field])),
                                     'to': (target_faction, target_field, self.fields[target_faction][target_field].index(target_fighter), len(self.fields[target_faction][target_field])),
                                     'bullet_img': action['bullet_img'], 'demage_img': action['demage_img'], 'value': value})
+                        case 'buff':
+                            if action['target'] == 'target_fighter':
+                                add_effect(target_fighter, action['effect'])
+                            elif action['target'] == 'self':
+                                add_effect(action_fighter, action['effect'])
                         case _:
                             return False
-                self.events.append({'type': 'cast', 
-                                    'from': (action_fighter.faction, action_fighter.field, self.fields[action_fighter.faction][action_fighter.field].index(action_fighter), len(self.fields[action_fighter.faction][action_fighter.field])),
-                                    'to': (target_faction, target_field, self.fields[target_faction][target_field].index(target_fighter), len(self.fields[target_faction][target_field])),
-                                    'skill': i})
                 return True
             
+def add_effect(fighter, effect):
+    for i in fighter.effects:
+        if i.name == effect.name:
+            i.duration += effect.duration
+            return
+    fighter.effects.append(effect)
+    fighter.effect_action(len(fighter.effects)-1)

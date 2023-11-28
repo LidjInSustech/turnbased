@@ -1,5 +1,5 @@
 {
-    "name":"南藻",
+    "name":"早楠",
     "maxhp":200.0,
     "maxmp":100.0,
     "maxap":5.0,
@@ -44,7 +44,7 @@
         {
             "name":"合金护盾",
             "requirements":{
-                "faction":"ally",
+                "faction":"any",
                 "field":false,
                 "fighter":false,
                 "longrange":false,
@@ -58,8 +58,11 @@
                 {
                     "type":"buff",
                     "target":"self",
-                    "value":{"blunt":40.0, "pierce":40.0},
-                    "time": 3
+                    "effect":{
+                        "name":"合金护盾",
+                        "values":{"blunt":40.0, "pierce":40.0},
+                        "duration": 3
+                    }
                 }
             ],
             "icon": "defense",

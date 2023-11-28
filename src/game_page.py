@@ -149,6 +149,8 @@ class page:
                     self.controller.skip()
                     self.controller.start()
                     return
+                elif self.controller.cast(i.message, None, None, None):
+                    return
                 i.pressed = True
                 self.pressed = i
                 return

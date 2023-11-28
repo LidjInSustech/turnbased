@@ -8,7 +8,7 @@ def main():
     pg.init()
     pg.display.set_mode((1024, 512))
 
-    fighter0 = fighter.fighter(tools.get_fighter('nan_zao'))
+    fighter0 = fighter.fighter(tools.get_fighter('zao_nan'))
     fighter1 = fighter.fighter(tools.get_fighter('za_bing'))
     controller0 = controller.controller()
     controller0.add_fighter(fighter0, 0, 0)
