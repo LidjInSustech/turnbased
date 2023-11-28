@@ -8,6 +8,7 @@ class fighter(pg.sprite.Sprite):
         super().__init__()
         self.initial = properties
         self.current = self.initial.copy()
+        self.current['resist'] = self.initial['resist'].copy()
         self.hp = self.current['maxhp']
         self.mp = self.current['maxmp']
         self.ap = 0
@@ -37,6 +38,7 @@ class fighter(pg.sprite.Sprite):
     
     def tick(self):
         self.current = self.initial.copy()
+        self.current['resist'] = self.initial['resist'].copy()
         for i in range(len(self.effects)-1, -1, -1):
             self.effect_action(i)
 
@@ -85,20 +87,21 @@ class fighter(pg.sprite.Sprite):
 
     def info(self):
         return [self.i['name'], 
-                f"{self.hp:4.1f}/{self.c['maxhp']:4.1f}",
-                f"{self.mp:4.1f}/{self.c['maxmp']:4.1f}",
-                f"{self.ap}/{self.c['maxap']:4.1f}"]
+                f"{self.hp:4.1f}/{self.c['maxhp']:^4.1f}",
+                f"{self.mp:4.1f}/{self.c['maxmp']:^4.1f}",
+                f"{self.ap}/{self.c['maxap']:^4.1f}"]
 
     def rect_explain(self, rect, font):
         surface = pg.Surface(rect.size)
         surface.fill((255,255,255))
-        surface.set_alpha(128)
-        begin = self.draw_basic(surface, font, (0,0))
+        surface.set_alpha(200)
+        begin = self.draw_basic(surface, font, (font.size*0.5,font.size*0.5))
+        begin = self.draw_resists(surface, font, begin)
         self.draw_effect(surface, font, begin)
         return surface
     
     def draw_basic(self, surface, font, begin):
-        length = surface.get_width()
+        length = surface.get_width()-font.size
         title = ['HP', 'MP', 'AP']
         colors = [(255,0,0), (0,0,255), (255,255,0)]
         values = [self.hp, self.mp, self.ap]
@@ -106,12 +109,27 @@ class fighter(pg.sprite.Sprite):
         info = self.info()
         text, text_rect = font.render(f"{self.i['name']}", (0,0,0))
         surface.blit(text, begin)
-        begin = (begin[0], begin[1]+font.size)
+        begin = (begin[0], begin[1]+font.size*1.1)
         for i in range(len(info)-1):
-            text, text_rect = font.render(f"{title[i]:6}{info[i+1]}", (0,0,0))
+            text, text_rect = font.render(f"{title[i]:8}{info[i+1]}", (0,0,0))
             pg.draw.rect(surface, colors[i], (begin[0], begin[1], length*values[i]/maxvalues[i], font.size))
             surface.blit(text, begin)
-            begin = (begin[0], begin[1]+font.size)
+            begin = (begin[0], begin[1]+font.size*1.1)
+        return begin
+    
+    def draw_resists(self, surface, font, begin):
+        length = surface.get_width()
+        colors = [(255,0,0), (0,0,0), (0,255,0)]
+        for i in self.c['resist'].keys():
+            if self.c['resist'][i] > self.i['resist'][i]:
+                color = colors[2]
+            elif self.c['resist'][i] < self.i['resist'][i]:
+                color = colors[0]
+            else:
+                color = colors[1]
+            text, text_rect = font.render(f"{i:10}{self.c['resist'][i]:>4.1f}", color)
+            surface.blit(text, begin)
+            begin = (begin[0], begin[1]+font.size*1.1)
         return begin
     
     def draw_effect(self, surface, font, begin):
@@ -119,5 +137,5 @@ class fighter(pg.sprite.Sprite):
             effect = self.effects[i]
             text, text_rect = font.render(f"{effect['name']}: {effect['duration']}", (0,0,0))
             surface.blit(text, begin)
-            begin = (begin[0], begin[1]+font.size)
+            begin = (begin[0], begin[1]+font.size*1.1)
         return begin

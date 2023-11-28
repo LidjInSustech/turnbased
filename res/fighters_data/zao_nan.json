@@ -13,7 +13,7 @@
         "heat":0,
         "cold":0,
         "electric":0,
-        "biochemical":0
+        "biochem":0
     },
     "skills":[
         {
@@ -61,7 +61,7 @@
                     "effect":{
                         "name":"合金护盾",
                         "values":{"blunt":40.0, "pierce":40.0},
-                        "duration": 3
+                        "duration": 5
                     }
                 }
             ],

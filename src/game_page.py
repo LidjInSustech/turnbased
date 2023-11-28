@@ -11,7 +11,7 @@ class page:
         self.pressed = None
         self.available = False
         self.mid_font = tools.get_font(int(self.rect.h*0.06))
-        self.small_font = tools.get_font(int(self.rect.h*0.04))
+        self.small_font = tools.get_font(int(self.rect.h*0.03))
 
     def create_field_rects(self):
         rect = self.rect
@@ -359,7 +359,7 @@ class button(pg.sprite.Sprite):
             return None
         surface = pg.Surface(rect.size)
         surface.fill((255,255,255))
-        surface.set_alpha(128)
+        surface.set_alpha(200)
         for i in range(len(self.descriptions)):
             text, text_rect = font.render(self.descriptions[i], (0,0,0))
             text_rect.topleft = (0, i*font.size)

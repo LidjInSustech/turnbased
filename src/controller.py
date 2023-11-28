@@ -135,8 +135,8 @@ class controller:
             
 def add_effect(fighter, effect):
     for i in fighter.effects:
-        if i.name == effect.name:
-            i.duration += effect.duration
+        if i['name'] == effect['name']:
+            i['duration'] += effect['duration']
             return
-    fighter.effects.append(effect)
+    fighter.effects.append(effect.copy())
     fighter.effect_action(len(fighter.effects)-1)
